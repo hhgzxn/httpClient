@@ -1,11 +1,11 @@
-out/
-log/
+out/*
+log/*
 
 # maven ignore
 target/
 
 # idea ignore
-.idea/
+.idea
 *.ipr
 *.iml
 *.iws
