@@ -1,1 +1,22 @@
-1
+SELECT jt."ID", 
+'{"name"                         : "'||jt."NAME"||'",
+  "display-name"                : "'||jt."DISPLAY_NAME"||'",
+  "number"                      : '||jt."ID"||',
+  "duns"                        : "'||jt."DUNS_NUMBER"||'",
+  "invoice-matching-level"      : "'||NVL(jt."INVOICE_MATCHING_LEVEL",'none')||'",
+  "custom-fields"               : {
+    "lbu-applicable"            : {
+      "lbu-applicable"          : '||REPLACE(REPLACE(jt."LBU_APPLICABLE",'[[','['),']]',']')||'}}
+}'
+from pru_coupa_intf_json j, 
+     json_table(j.json_file, '$.data[*]' COLUMNS (ID NUMBER path '$."supplier-id"'
+                                                  , NAME VARCHAR2(1000) PATH '$."name"'
+                                                  , DISPLAY_NAME VARCHAR2(1000) PATH '$."display-name"'
+                                                  , DUNS_NUMBER VARCHAR2(100) PATH '$."duns-number"'
+                                                  , LBU_APPLICABLE VARCHAR2(1000) FORMAT JSON WITH WRAPPER PATH '$."custom-fields"."lbu-applicable"'
+                                                  , INVOICE_MATCHING_LEVEL VARCHAR2(1000) PATH '$."invoice-matching-level"'
+                                                  )
+                                                  ) jt
+where 1=1
+and   j.interface_type = 'SIM'
+and   j.request_id=32403842;
